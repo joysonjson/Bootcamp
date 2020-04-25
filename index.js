@@ -12,6 +12,8 @@ dotenv.config({ path: "./config/config.env" });
 
 //importing routers
 const bootcamps = require("./router/bootcamps");
+const courses = require("./router/courses");
+
 const app = express();
 
 app.use(express.json());
@@ -27,6 +29,7 @@ if (process.env.NODE_ENV === "development") {
 
 //mount routes
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/courses", courses);
 
 //error handler adding it after he router so that it is accessible router and its controller
 app.use(errorHandler);
