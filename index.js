@@ -1,18 +1,20 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const logger = require("./middleware/logger");
-const morgan = require("morgan");
-const colors = require("colors");
-const errorHandler = require("./middleware/error");
-const connectToDb = require("./config/db");
+const express = require('express');
+const dotenv = require('dotenv');
+const logger = require('./middleware/logger');
+const morgan = require('morgan');
+const colors = require('colors');
+const errorHandler = require('./middleware/error');
+const connectToDb = require('./config/db');
+const fileUpload = require('express-fileupload');
+const path = require('path');
 
 //load env vars
 
-dotenv.config({ path: "./config/config.env" });
+dotenv.config({ path: './config/config.env' });
 
 //importing routers
-const bootcamps = require("./router/bootcamps");
-const courses = require("./router/courses");
+const bootcamps = require('./router/bootcamps');
+const courses = require('./router/courses');
 
 const app = express();
 
@@ -23,13 +25,17 @@ connectToDb();
 //middle ware
 // app.use(logger);
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
 }
+app.use(fileUpload());
+
+// set static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 //mount routes
-app.use("/api/v1/bootcamps", bootcamps);
-app.use("/api/v1/courses", courses);
+app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 //error handler adding it after he router so that it is accessible router and its controller
 app.use(errorHandler);
@@ -42,7 +48,7 @@ const server = app.listen(PORT, () => {
   );
 });
 
-process.on("unhandledRejection", (err, promise) => {
+process.on('unhandledRejection', (err, promise) => {
   console.log(`Error : ${err.message}.`.red);
 
   server.close(() => process.exit());
