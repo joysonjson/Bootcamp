@@ -8,8 +8,24 @@ const {
   updateCourse,
   deleteCourse,
 } = require('../controller/courses');
+const advanceResults = require('../middleware/advancedResult');
+const Course = require('../models/Courses');
+const { protect, authorize } = require('../middleware/auth.js');
 
-router.route('/').get(getCourses).post(addCourse);
-router.route('/:id').get(getCourse).put(updateCourse).delete(deleteCourse);
+router
+  .route('/')
+  .get(
+    advanceResults(Course, {
+      path: 'bootcamp',
+      select: 'name description',
+    }),
+    getCourses
+  )
+  .post(protect, authorize('publisher', 'admin'), addCourse);
+router
+  .route('/:id')
+  .get(getCourse)
+  .put(protect, authorize('publisher', 'admin'), updateCourse)
+  .delete(protect, authorize('publisher', 'admin'), deleteCourse);
 
 module.exports = router;
