@@ -1,14 +1,13 @@
-const User = require('../models/User');
-const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../middleware/asyncHandler');
-const path = require('path');
+const User = require("../models/User");
+const ErrorResponse = require("../utils/errorResponse");
+const asyncHandler = require("../middleware/asyncHandler");
+const path = require("path");
 
 // @desc      Register usr
 // @route     POST /api/v1/auth/register
 // @access    Public
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password, role } = req.body;
-  console.log('req body'.red, req.body);
 
   const user = await User.create({
     name,
@@ -16,6 +15,7 @@ exports.register = asyncHandler(async (req, res, next) => {
     password,
     role,
   });
+
   const token = user.getSignedJwtToken();
   res.status(200).json({ status: true, token });
 });
@@ -25,7 +25,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 // @access    Public
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log('req body'.red, req.body);
+  console.log("req body".red, req.body);
 
   // validation
   if (!email || !password) {
@@ -35,7 +35,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
   // check for user
 
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select("+password");
   if (!user) {
     return next(new ErrorResponse(`Inavalid credentials`, 401));
   }
@@ -59,12 +59,12 @@ const getTokenResponse = (user, statusCode, res) => {
     ),
     httpOnly: true,
   };
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     options.secure = true;
   }
   res
     .status(statusCode)
-    .cookie('token', token, options)
+    .cookie("token", token, options)
     .json({ status: true, token });
 };
 
